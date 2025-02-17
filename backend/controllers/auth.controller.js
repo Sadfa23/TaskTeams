@@ -71,7 +71,16 @@ export const login = async (req, res) => {
         const token = generateTokenAndSetCookie(user._id, res)
         console.log('This is login token',token)
 
-        res.status(200).json({success:true, message:'Logged in successfully', token})
+        const options = {
+            expiresIn:Date.now() + 2*24*60*60*1000,
+            httpOnly:true
+        }
+
+        res.status(200).cookie('LOGIN-token', token, options).json({
+            success:true,
+            token,
+            message:'Logged in successfully'
+        })
 
     } catch (error) {
         console.log('Error in login', error)
@@ -80,8 +89,12 @@ export const login = async (req, res) => {
 
 export const getUserProfile = async (req, res) => {
     try {
+        //const token = req.cookie['LOGIN-token'];
+        //console.log('Token from getUserProfile', token)
         
         const userId = req.user._id;
+
+        console.log('User id', userId)
         const user = await User.findById(userId).select('-password');
 
         if(!user) {

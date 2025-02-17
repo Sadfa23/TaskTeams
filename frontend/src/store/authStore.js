@@ -13,7 +13,6 @@ export const useAuthStore = create((set)=>({
 		try {
 			const response = await axios.post("http://localhost:3001/api/auth/signup", credentials);
 			set({ user: response.data.user, isSigningUp: false });
-            console.log('Signed in successfully');
 			toast.success("Account created successfully");
 		} catch (error) {
             console.log(error)
@@ -25,8 +24,12 @@ export const useAuthStore = create((set)=>({
 		set({ isLoggingIn: true });
 		try {
 			const response = await axios.post("http://localhost:3001/api/auth/login", credentials);
+			const { token } = response.data;
+    		localStorage.setItem('token', token);
 			set({ user: response.data.user, isLoggingIn: false });
+            console.log(response.data)
 			toast.success("Logged in successfully");
+			return response.data
 		} catch (error) {
 			console.log(error);
 			set({ isLoggingIn: false, user: null });

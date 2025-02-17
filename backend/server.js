@@ -11,11 +11,15 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT
 connectDb()
-app.use(cors())
+const corsOptions = {
+    origin: 'http://localhost:5173', // Your frontend's origin
+    credentials: true, // Allow credentials
+};
+app.use(cors(corsOptions))
 app.use(express.json());
 app.use(cookieParser());
 app.use('/api/auth', authRoutes);
-app.use('/api/projects',projectRoutes)  // '/' for getAllProjects route
+app.use('/api/projects',authMiddleware,projectRoutes)  // '/' for getAllProjects route
 
 app.get('/',(req, res)=>{
     res.send('Hello from server')

@@ -44,12 +44,9 @@ function UserDashboard() {
 
         const userData = await userResponse.data.user;
         console.log(userData)
-
-        
-        setUserData(userData);
+        //setUserData(userData);
 
         // Fetch available projects
-        /*
         const projectsResponse = await fetch('/api/projects', {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -70,19 +67,17 @@ function UserDashboard() {
           initialStatus[project._id] = 'Not Applied'; // Default status
         });
         setApplicationStatus(initialStatus);
-      */
+
       } catch (err) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
-    
 
     fetchUserData();
   }, []);
 
-/*
   const handleAddSkill = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -133,7 +128,7 @@ function UserDashboard() {
       setError(err.message);
     }
   };
-*/
+
 
   if (loading) {
     return <div className="text-center text-gray-500">Loading user data...</div>;
@@ -149,15 +144,53 @@ function UserDashboard() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1>User Dashboard</h1>
-      <div>
-        <p>Name: {userData.name}</p>
-        <p>Email: {userData.email}</p>
-        <p>Skills: {userData.skills.join(', ')}</p>
-        <p>Role: {userData.role}</p>
-        <p>Created At: {new Date(userData.createdAt).toLocaleString()}</p>
-        <p>Updated At: {new Date(userData.updatedAt).toLocaleString()}</p>
+      {/* ... other sections */}
+
+      {/* Skills */}
+      <div className="bg-white p-6 rounded-lg shadow-md mb-4">
+        <h3 className="text-xl font-semibold mb-2">Skills</h3>
+        {/* ... skills list */}
+        <div className="mt-4 flex"> {/* Add skill input and button */}
+          <input
+            type="text"
+            value={newSkill}
+            onChange={(e) => setNewSkill(e.target.value)}
+            className="border border-gray-300 px-3 py-2 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500 mr-2"
+            placeholder="Add a skill"
+          />
+          <button
+            onClick={handleAddSkill}
+            className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700"
+          >
+            Add Skill
+          </button>
+        </div>
       </div>
+
+      {/* Available Projects */}
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <h3 className="text-xl font-semibold mb-2">Available Projects</h3>
+        {availableProjects.length > 0 ? (
+          <ul className="list-disc ml-6">
+            {availableProjects.map((project) => (
+              <li key={project._id} className="mb-2">
+                {project.name} - {project.description}
+                <button
+                  onClick={() => handleApply(project._id)}
+                  className="bg-green-500 text-white py-1 px-2 rounded-md hover:bg-green-700 ml-4"
+                  disabled={applicationStatus[project._id] === 'Applied'} // Disable if applied
+                >
+                  {applicationStatus[project._id] === 'Applied' ? 'Applied' : 'Apply'}
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No projects available.</p>
+        )}
+      </div>
+
+      {/* ... other sections */}
     </div>
   );
 }
